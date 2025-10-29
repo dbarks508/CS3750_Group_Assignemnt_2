@@ -45,10 +45,9 @@ export default function Home() {
 
   return (
     <div>
-      <h1>Home Page</h1>
-      <p>Successfully navigated to the home page!</p>
+      <h1>Welcome to Your Banking App</h1>
+      <p>Coming soon...</p>
       <p>Username: {name}</p>
-      <p>Role type: {userType}</p>
       <br />
       <button onClick={logout}>Logout</button>
       <div>{errorMessage && <p>{errorMessage}</p>}</div>

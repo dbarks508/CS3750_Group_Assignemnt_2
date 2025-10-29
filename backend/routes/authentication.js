@@ -127,8 +127,9 @@ userRoutes.route("/logout").post((req, res) => {
   }
 });
 
-// VERIFY SESSION
+// VERIFY SESSION - used to see if a session is created to prevent navigation to restricted pages
 userRoutes.route("/verify").get(async function (req, res) {
+  // see if there is one
   let status = "";
   if (!req.session.username) {
     status = "no session set";
@@ -136,9 +137,9 @@ userRoutes.route("/verify").get(async function (req, res) {
     status = "valid session";
   }
 
+  // send data back
   const resultObj = {
     status: status,
-    type: req.session.type,
     username: req.session.username,
   };
 
