@@ -14,7 +14,7 @@ function sha256(pAndS) {
 //  REGISTER
 userRoutes.route("/register").post(async (req, res) => {
   try {
-    const { username, password, type } = req.body;
+    const { username, password } = req.body;
 
     if (!username || !password || !type) {
       return res.status(400).json({ error: "empty fields" });
@@ -25,27 +25,33 @@ userRoutes.route("/register").post(async (req, res) => {
 
     const existing = await usersCollection.findOne({ username: username });
     if (existing) {
-      return res.status(400).json({ error: "user exists already" });
+      return res.status(400).json({ error: "user already exists" });
     }
 
+    // obtain salt and hash the password
     const salt = crypto.randomBytes(16).toString("hex");
     const hashedPassword = sha256(password + salt);
 
+    // insert new user record with default fields
     await usersCollection.insertOne({
       username: username,
       salt: salt,
       password: hashedPassword,
-      type: type,
+      accounts: [
+        { name: "savings", balance: 0 },
+        { name: "checking", balance: 0 },
+        { name: "other", balance: 0 },
+      ],
     });
 
+    // set session username
     req.session.username = username;
-    req.session.type = type;
     let status = "session set";
 
+    // send back some json
     const resultObj = {
       message: "user is registered and logged in",
       username: username,
-      type: type,
       status: status,
     };
     res.json(resultObj);
@@ -60,26 +66,28 @@ userRoutes.route("/login").post(async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
-      return res.status(400).json({ error: "empty fields" });
+      return res.status(400).json({ error: "cannot have empty fields" });
     }
 
     let db = dbo.getDB();
     const usersCollection = db.collection("users");
     const user = await usersCollection.findOne({ username: username });
 
+    // verify user exists
     if (!user) {
       return res.status(400).json({ error: "no such user with this username" });
     }
 
+    // if user found, apply salt to stored password and check for match
     const salt = user.salt;
     const hashedPassword = user.password;
-
     const match = sha256(password + salt);
 
     if (match != hashedPassword) {
       return res.status(400).json({ error: "invalid password" });
     }
 
+    // check if session already going, if not start new session
     let status = "";
     if (req.session.username) {
       status = "user session already created";
@@ -89,10 +97,10 @@ userRoutes.route("/login").post(async (req, res) => {
       status = "session created";
     }
 
+    // send back json
     const resultObj = {
       message: "user logged in",
       username: username,
-      type: user.type,
       status: status,
     };
 
@@ -104,6 +112,7 @@ userRoutes.route("/login").post(async (req, res) => {
 
 // LOGOUT
 userRoutes.route("/logout").post((req, res) => {
+  // destroy session and clear cookies
   if (req.session.username) {
     req.session.destroy((err) => {
       if (err) {
@@ -118,7 +127,7 @@ userRoutes.route("/logout").post((req, res) => {
   }
 });
 
-// verify the session
+// VERIFY SESSION
 userRoutes.route("/verify").get(async function (req, res) {
   let status = "";
   if (!req.session.username) {
