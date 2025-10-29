@@ -11,6 +11,10 @@ function sha256(pAndS) {
   return crypto.createHash("sha256").update(pAndS).digest("hex");
 }
 
+function genAccountNumber() {
+  return Math.floor(Math.random() * (999 - 100 + 1)) + 100;
+}
+
 //  REGISTER
 userRoutes.route("/register").post(async (req, res) => {
   try {
@@ -32,8 +36,21 @@ userRoutes.route("/register").post(async (req, res) => {
     const salt = crypto.randomBytes(16).toString("hex");
     const hashedPassword = sha256(password + salt);
 
+    // generate unique random account number
+    let randomAccountNumber = genAccountNumber();
+    let existingAccount = await usersCollection.findOne({
+      accountNumber: randomAccountNumber,
+    });
+    while (existingAccount) {
+      randomAccountNumber = genAccountNumber();
+      existingAccount = await usersCollection.findOne({
+        accountNumber: randomAccountNumber,
+      });
+    }
+
     // insert new user record with default fields
     await usersCollection.insertOne({
+      accountNumber: randomAccountNumber,
       username: username,
       salt: salt,
       password: hashedPassword,
