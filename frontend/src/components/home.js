@@ -20,7 +20,6 @@ export default function Home() {
       if (data.status === "no session set") {
         navigate("/");
       } else {
-        setUserType(data.type);
         setName(data.username);
       }
     }

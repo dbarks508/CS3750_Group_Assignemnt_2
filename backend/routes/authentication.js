@@ -16,7 +16,7 @@ userRoutes.route("/register").post(async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    if (!username || !password || !type) {
+    if (!username || !password) {
       return res.status(400).json({ error: "empty fields" });
     }
 

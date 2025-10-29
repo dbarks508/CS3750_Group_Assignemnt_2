@@ -7,7 +7,6 @@ export default function Register() {
     username: "",
     password: "",
     passwordCheck: "",
-    type: "",
   });
 
   const navigate = useNavigate();
@@ -35,7 +34,6 @@ export default function Register() {
     const newUser = {
       username: form.username,
       password: form.password,
-      type: form.type,
     };
 
     const result = await fetch("http://localhost:4000/register", {
@@ -67,6 +65,7 @@ export default function Register() {
 
   return (
     <div>
+      <h1>Your Bank</h1>
       <h3>Register</h3>
       <form onSubmit={onSubmit}>
         <div>
@@ -103,16 +102,6 @@ export default function Register() {
           (Password must contain at least: 1 uppercase, 1 lowercase, 1 digit, 1
           special character, 8 total characters)
         </p>
-        <div>
-          <label>User Type: </label>
-          <input
-            type="text"
-            id="type"
-            value={form.type}
-            onChange={(e) => updateForm({ type: e.target.value })}
-            required
-          />
-        </div>
         <br />
         <div>
           <input type="submit" value="Register"></input>
