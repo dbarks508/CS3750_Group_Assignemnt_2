@@ -6,9 +6,10 @@ const dbo = require("../db/conn");
 
 // deposit route
 transactionRoutes.route("/deposit").post(async (req, res) => {
+  console.log("in backend route /deposit");
   try {
     // destructure req from front end
-    const { accountNumber, accountName, amount } = req.body;
+    const { accountNumber, accountIndex, amount } = req.body;
 
     // connect db and query for the user record
     let db = dbo.getDB();
@@ -24,9 +25,40 @@ transactionRoutes.route("/deposit").post(async (req, res) => {
     }
 
     // deposit amount into selected account
-    //TODO
+    const identifier = { accountNumber: accountNumber };
+    const updatePath = `accounts.${accountIndex - 1}.balance`;
+    const updatedAmount = { $inc: { [updatePath]: amount } };
+    let result = await usersCollection.updateOne(identifier, updatedAmount);
+
+    if (result.matchedCount === 0 || result.modifiedCount === 0) {
+      console.log("deposit error");
+    }
+
+    const transactionCollection = db.collection("transactions");
+
+    const transactionObject = {
+      accountNumber: accountNumber,
+      accountIndex: accountIndex,
+      action: "deposit",
+      amount: amount,
+      catagory: "food",
+      date: new Date(),
+    };
+
+    result = await transactionCollection.insertOne(transactionObject);
+
+    if (!result.acknowledged) {
+      console.log("transaction not added to history");
+    }
+
+    // send back something?
+    res.json({
+      status: "deposit successful",
+    });
   } catch (error) {
     console.log("in route /depost catch error block");
-    throw err;
+    throw error;
   }
 });
+
+module.exports = transactionRoutes;
