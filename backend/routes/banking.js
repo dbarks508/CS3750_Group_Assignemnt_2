@@ -9,7 +9,7 @@ transactionRoutes.route("/deposit").post(async (req, res) => {
   console.log("in backend route /deposit");
   try {
     // destructure req from front end
-    const { accountNumber, accountIndex, amount } = req.body;
+    const { catagory, accountNumber, accountIndex, amount } = req.body;
 
     // connect db and query for the user record
     let db = dbo.getDB();
@@ -41,7 +41,7 @@ transactionRoutes.route("/deposit").post(async (req, res) => {
       accountIndex: accountIndex,
       action: "deposit",
       amount: amount,
-      catagory: "food",
+      catagory: catagory,
       date: new Date(),
     };
 
@@ -49,12 +49,17 @@ transactionRoutes.route("/deposit").post(async (req, res) => {
 
     if (!result.acknowledged) {
       console.log("transaction not added to history");
+    } else {
+      const updatedUser = await transactionCollection.findOne({
+        accountNumber: accountNumber,
+      });
+      // send back something?
+      res.json({
+        status: "deposit successful",
+        account: user.accountIndex,
+        updatedAmount: updatedUser.accounts[accountIndex - 1].balance,
+      });
     }
-
-    // send back something?
-    res.json({
-      status: "deposit successful",
-    });
   } catch (error) {
     console.log("in route /depost catch error block");
     throw error;

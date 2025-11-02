@@ -63,12 +63,14 @@ userRoutes.route("/register").post(async (req, res) => {
 
     // set session username
     req.session.username = username;
+    req.session.accountNumber = randomAccountNumber; // the account number just generated is now the user's
     let status = "session set";
 
     // send back some json
     const resultObj = {
       message: "user is registered and logged in",
       username: username,
+      accountNumber: randomAccountNumber,
       status: status,
     };
     res.json(resultObj);
@@ -110,7 +112,7 @@ userRoutes.route("/login").post(async (req, res) => {
       status = "user session already created";
     } else {
       req.session.username = username;
-      req.session.type = user.type;
+      req.session.accountNumber = user.accountNumber;
       status = "session created";
     }
 
@@ -118,6 +120,7 @@ userRoutes.route("/login").post(async (req, res) => {
     const resultObj = {
       message: "user logged in",
       username: username,
+      accountNumber: user.accountNumber,
       status: status,
     };
 
@@ -158,6 +161,7 @@ userRoutes.route("/verify").get(async function (req, res) {
   const resultObj = {
     status: status,
     username: req.session.username,
+    accountNumber: req.session.accountNumber,
   };
 
   res.json(resultObj);

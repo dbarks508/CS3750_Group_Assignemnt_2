@@ -5,6 +5,7 @@ export default function Home() {
   const [errorMessage, setErrorMessage] = useState("");
   const [userType, setUserType] = useState("");
   const [name, setName] = useState("");
+  const [accountNumber, setAccountNumber] = useState(null);
 
   const navigate = useNavigate();
 
@@ -21,6 +22,7 @@ export default function Home() {
         navigate("/");
       } else {
         setName(data.username);
+        setAccountNumber(data.accountNumber);
       }
     }
     run();
@@ -48,6 +50,7 @@ export default function Home() {
       <h1>Welcome to Your Banking App</h1>
       <p>Coming soon...</p>
       <p>Username: {name}</p>
+      <p>Account Number: {accountNumber}</p>
       <br />
       <button onClick={logout}>Logout</button>
       <div>{errorMessage && <p>{errorMessage}</p>}</div>
