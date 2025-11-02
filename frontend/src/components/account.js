@@ -8,6 +8,7 @@ export default function Account() {
     account: "",
   });
 
+  // helpr function to update form on change
   function updateForm(jsonObj) {
     return setForm((prevJsonObj) => {
       return { ...prevJsonObj, ...jsonObj };
@@ -31,7 +32,7 @@ export default function Account() {
           <label>catagory: </label>
           <input
             type="text"
-            id="username"
+            id="catagory"
             value={form.catagory}
             onChange={(e) => updateForm({ catagory: e.target.value })}
             required
