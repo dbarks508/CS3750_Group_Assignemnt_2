@@ -70,4 +70,26 @@ transactionRoutes.route("/deposit").post(async (req, res) => {
   }
 });
 
+transactionRoutes.route("/transactions").get(async (req, res) => {
+  let accountNumber = req?.session?.accountNumber;
+
+  if(accountNumber === undefined){
+    res.status(401).json({ error: "user needs to be logged in" });
+    return;
+  }
+
+  let db = dbo.getDB();
+  const col = db.collection("transactions");
+
+  let data = await col.find({accountNumber}, {projection: {
+    _id: 0,
+    action: 1,
+    amount: 1,
+    category: 1,
+    date: 1,
+  }}).toArray();
+
+  res.json(data);
+});
+
 module.exports = transactionRoutes;
