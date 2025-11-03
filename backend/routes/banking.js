@@ -9,7 +9,8 @@ transactionRoutes.route("/deposit").post(async (req, res) => {
   console.log("in backend route /deposit");
   try {
     // destructure req from front end
-    const { catagory, accountNumber, accountIndex, amount } = req.body;
+    const { category, accountNumber, accountIndex, amount } = req.body;
+    console.log(req.body);
 
     // connect db and query for the user record
     let db = dbo.getDB();
@@ -26,8 +27,10 @@ transactionRoutes.route("/deposit").post(async (req, res) => {
 
     // deposit amount into selected account
     const identifier = { accountNumber: accountNumber };
-    const updatePath = `accounts.${accountIndex - 1}.balance`;
-    const updatedAmount = { $inc: { [updatePath]: amount } };
+    const index = Number(accountIndex);
+    console.log("index: ", index);
+    const updatePath = `accounts.${index}.balance`;
+    const updatedAmount = { $inc: { [updatePath]: Number(amount) } };
     let result = await usersCollection.updateOne(identifier, updatedAmount);
 
     if (result.matchedCount === 0 || result.modifiedCount === 0) {
@@ -41,7 +44,7 @@ transactionRoutes.route("/deposit").post(async (req, res) => {
       accountIndex: accountIndex,
       action: "deposit",
       amount: amount,
-      catagory: catagory,
+      category: category,
       date: new Date(),
     };
 
@@ -50,19 +53,20 @@ transactionRoutes.route("/deposit").post(async (req, res) => {
     if (!result.acknowledged) {
       console.log("transaction not added to history");
     } else {
-      const updatedUser = await transactionCollection.findOne({
+      // get updated balance
+      const updatedUser = await usersCollection.findOne({
         accountNumber: accountNumber,
       });
-      // send back something?
+      // send back responce to frontend
       res.json({
-        status: "deposit successful",
-        account: user.accountIndex,
-        updatedAmount: updatedUser.accounts[accountIndex - 1].balance,
+        message: "deposit successful",
+        account: updatedUser.accounts[index].name,
+        updatedAmount: updatedUser.accounts[index].balance,
       });
     }
   } catch (error) {
-    console.log("in route /depost catch error block");
-    throw error;
+    console.error("in route /depost catch error block", error);
+    res.status(500).json({ error: "server error - deposit" });
   }
 });
 

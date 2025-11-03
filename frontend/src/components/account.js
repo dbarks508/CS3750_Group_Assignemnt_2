@@ -5,10 +5,10 @@ import "./account.css";
 export default function Account() {
   const [accountNumber, setAccountNumber] = useState(null);
   const [message, setMessage] = useState("");
-  const [account, setAccount] = useState(0);
-  const [updatedAmount, setUdatedAmount] = useState(0);
+  const [account, setAccount] = useState(null);
+  const [updatedAmount, setUpdatedAmount] = useState(null);
   const [form, setForm] = useState({
-    catagory: "",
+    category: "",
     amount: "",
     account: "",
   });
@@ -17,12 +17,12 @@ export default function Account() {
 
   useEffect(() => {
     async function run() {
-      const responce = await fetch(`http://localhost:4000/verify`, {
+      const response = await fetch(`http://localhost:4000/verify`, {
         method: "GET",
         credentials: "include",
       });
 
-      const data = await responce.json();
+      const data = await response.json();
 
       if (data.status === "no session set") {
         navigate("/");
@@ -45,7 +45,7 @@ export default function Account() {
     e.preventDefault();
 
     const deposit = {
-      catagory: form.catagory,
+      category: form.category,
       accountNumber: accountNumber,
       accountIndex: form.account,
       amount: form.amount,
@@ -55,58 +55,70 @@ export default function Account() {
     const response = await fetch(`http://localhost:4000/deposit`, {
       method: "POST",
       credentials: "include",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(deposit),
     });
 
     // handle responce
     const data = await response.json();
-    if (data.message == "deposit successful") {
+    if (data.message === "deposit successful") {
+      console.log("json recieved fom backend:", data);
       setMessage(data.message);
       setAccount(data.account);
-      setUdatedAmount(data.amount);
+      setUpdatedAmount(data.updatedAmount);
     }
   }
 
   return (
-    <div class="container">
-      <form onSubmit={onDeposit}>
-        <div>
-          <label>Catagory: </label>
-          <input
-            type="text"
-            id="catagory"
-            value={form.catagory}
-            onChange={(e) => updateForm({ catagory: e.target.value })}
-            required
-          />
-        </div>
+    <div className="main">
+      <div className="container">
+        <form onSubmit={onDeposit}>
+          <div>
+            <label>Category: </label>
+            <input
+              type="text"
+              id="catagory"
+              value={form.category}
+              onChange={(e) => updateForm({ category: e.target.value })}
+              required
+            />
+          </div>
 
-        <div>
-          <label>Amount: </label>
-          <input
-            type="number"
-            id="amount"
-            value={form.catagory}
-            onChange={(e) => updateForm({ catagory: e.target.value })}
-            required
-          />
-        </div>
+          <div>
+            <label>Amount: </label>
+            <input
+              type="number"
+              id="amount"
+              value={form.amount}
+              onChange={(e) => updateForm({ amount: e.target.value })}
+              required
+            />
+          </div>
 
-        <div>
-          <label>Account: </label>
-          <select name="account" id="account">
-            <option value={form.account}>Account #1 - savings</option>
-            <option value={form.account}>Account #2 - checking</option>
-            <option value={form.account}>Account #3 - other</option>
-          </select>
-        </div>
+          <div>
+            <label>Account: </label>
+            <select
+              name="account"
+              id="account"
+              value={form.account}
+              onChange={(e) => updateForm({ account: e.target.value })}
+            >
+              <option value={0}>Account #1 - savings</option>
+              <option value={1}>Account #2 - checking</option>
+              <option value={2}>Account #3 - other</option>
+            </select>
+          </div>
 
-        <input type="submit" value="Deposit"></input>
-      </form>
-      <div class="results">
-        <div>{message && <p>{message}</p>}</div>
-        <div>{account && <p>{account}</p>}</div>
-        <div>{updatedAmount && <p>{updatedAmount}</p>}</div>
+          <input type="submit" value="Deposit"></input>
+        </form>
+      </div>
+
+      <div className="result">
+        {message && <p>{message}</p>}
+        {account && <p>Your {account} account now has </p>}
+        {updatedAmount !== null && updatedAmount !== undefined && (
+          <p>${updatedAmount} in it. Congratulations!</p>
+        )}
       </div>
     </div>
   );
