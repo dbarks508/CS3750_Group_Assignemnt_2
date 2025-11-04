@@ -3,7 +3,7 @@ const uri = process.env.ATLAS_URI;
 
 let _db;
 module.exports = {
-  connectToServer: function (callback) {
+  connectToServer: async function (callback) {
     console.log("Attempting to connect");
     // Create a MongoClient with a MongoClientOptions object to set the Stable API version
     const client = new MongoClient(uri, {
@@ -31,7 +31,7 @@ module.exports = {
         //await client.close();
       }
     }
-    run().catch(console.dir);
+    await run().catch(console.dir);
   },
 
   getDB: function () {
