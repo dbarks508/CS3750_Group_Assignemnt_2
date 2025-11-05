@@ -45,6 +45,10 @@ export default function Home() {
     }
   }
 
+  function goToAccountPage() {
+    navigate("/account");
+  }
+
   return (
     <div>
       <h1>Welcome to Your Banking App</h1>
@@ -53,6 +57,8 @@ export default function Home() {
       <p>Account Number: {accountNumber}</p>
       <br />
       <button onClick={logout}>Logout</button>
+      <br />
+      <button onClick={goToAccountPage}>Account Page</button>
       <div>{errorMessage && <p>{errorMessage}</p>}</div>
     </div>
   );

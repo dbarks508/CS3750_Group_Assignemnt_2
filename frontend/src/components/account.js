@@ -41,9 +41,7 @@ export default function Account() {
     });
   }
 
-  async function onDeposit(e) {
-    e.preventDefault();
-
+  async function onSubmit(actionType) {
     const deposit = {
       category: form.category,
       accountNumber: accountNumber,
@@ -52,7 +50,7 @@ export default function Account() {
     };
 
     // send to backend
-    const response = await fetch(`http://localhost:4000/deposit`, {
+    const response = await fetch(`http://localhost:4000/${actionType}`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -61,18 +59,24 @@ export default function Account() {
 
     // handle responce
     const data = await response.json();
-    if (data.message === "deposit successful") {
-      console.log("json recieved fom backend:", data);
+
+    if (data && !data.error) {
       setMessage(data.message);
       setAccount(data.account);
       setUpdatedAmount(data.updatedAmount);
+    } else {
+      setMessage("error handling data ent from backend: ");
     }
   }
 
   return (
     <div className="main">
       <div className="container">
-        <form onSubmit={onDeposit}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+        >
           <div>
             <label>Category: </label>
             <input
@@ -109,7 +113,8 @@ export default function Account() {
             </select>
           </div>
 
-          <input type="submit" value="Deposit"></input>
+          <button onClick={() => onSubmit("deposit")}>Deposit</button>
+          <button onClick={() => onSubmit("withdraw")}>Withdraw</button>
         </form>
       </div>
 
