@@ -26,7 +26,6 @@ transactionRoutes.route("/deposit").post(async (req, res) => {
     // deposit amount into selected account
     const identifier = { accountNumber: accountNumber };
     const index = Number(accountIndex);
-    console.log("index: ", index);
     const updatePath = `accounts.${index}.balance`;
     const updatedAmount = { $inc: { [updatePath]: Number(amount) } };
     let result = await usersCollection.updateOne(identifier, updatedAmount);
@@ -98,7 +97,8 @@ transactionRoutes.route("/withdraw").post(async (req, res) => {
 
     // check if balance is sufficient to withdraw amount
     const currentBalance = user.accounts[index].balance;
-    if (currentBalance < amount) {
+    if (currentBalance < Number(amount)) {
+      console.log("withdrawal error - insufficient funds");
       return res.status(400).json({ error: "insufficient funds" });
     }
     // withdraw amount into selected account
@@ -116,7 +116,7 @@ transactionRoutes.route("/withdraw").post(async (req, res) => {
     const transactionObject = {
       accountNumber: accountNumber,
       accountIndex: accountIndex,
-      action: "deposit",
+      action: "withdraw",
       amount: amount,
       category: category,
       date: new Date(),
@@ -134,7 +134,7 @@ transactionRoutes.route("/withdraw").post(async (req, res) => {
         accountNumber: accountNumber,
       });
 
-      // send back responce to frontend
+      // send back response to frontend
       res.json({
         message: "withdrawal successful",
         account: updatedUser.accounts[index].name,

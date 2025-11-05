@@ -5,6 +5,7 @@ import "./account.css";
 export default function Account() {
   const [accountNumber, setAccountNumber] = useState(null);
   const [message, setMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [account, setAccount] = useState(null);
   const [updatedAmount, setUpdatedAmount] = useState(null);
   const [form, setForm] = useState({
@@ -34,6 +35,31 @@ export default function Account() {
     return;
   }, []);
 
+  // clears form fields if message is displayed and sets timout for error mesages
+  useEffect(() => {
+    setForm({ category: "", amount: "", account: "" });
+
+    const timeout = setTimeout(() => {
+      if (message) {
+        setMessage("");
+      }
+
+      if (errorMessage) {
+        setErrorMessage("");
+      }
+
+      if (account) {
+        setAccount(null);
+      }
+
+      if (updatedAmount) {
+        setUpdatedAmount(null);
+      }
+    }, 5000);
+
+    return () => clearTimeout(timeout);
+  }, [message, errorMessage, account, updatedAmount]);
+
   // helpr function to update form on change
   function updateForm(jsonObj) {
     return setForm((prevJsonObj) => {
@@ -42,7 +68,7 @@ export default function Account() {
   }
 
   async function onSubmit(actionType) {
-    const deposit = {
+    const accountAction = {
       category: form.category,
       accountNumber: accountNumber,
       accountIndex: form.account,
@@ -54,7 +80,7 @@ export default function Account() {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(deposit),
+      body: JSON.stringify(accountAction),
     });
 
     // handle responce
@@ -65,7 +91,7 @@ export default function Account() {
       setAccount(data.account);
       setUpdatedAmount(data.updatedAmount);
     } else {
-      setMessage("error handling data ent from backend: ");
+      setErrorMessage(data.error);
     }
   }
 
@@ -125,6 +151,8 @@ export default function Account() {
           <p>${updatedAmount} in it. Congratulations!</p>
         )}
       </div>
+
+      <div>{errorMessage && <p className="error">{errorMessage}</p>}</div>
     </div>
   );
 }
