@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import "./account.css";
 
 export default function Account() {
+  const [username, setUSerName] = useState("");
   const [accountNumber, setAccountNumber] = useState(null);
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -28,6 +29,7 @@ export default function Account() {
       if (data.status === "no session set") {
         navigate("/");
       } else {
+        setUSerName(data.username);
         setAccountNumber(data.accountNumber);
       }
     }
@@ -97,7 +99,8 @@ export default function Account() {
 
   return (
     <div className="main">
-      <div className="container">
+      {username && <h1>Welcome to your account management page, {username}</h1>}
+      <div className="main-container">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -144,15 +147,14 @@ export default function Account() {
         </form>
       </div>
 
-      <div className="result">
+      <div className="result-container">
         {message && <p>{message}</p>}
         {account && <p>Your {account} account now has </p>}
         {updatedAmount !== null && updatedAmount !== undefined && (
           <p>${updatedAmount} in it. Congratulations!</p>
         )}
+        {errorMessage && <p className="error">{errorMessage}</p>}
       </div>
-
-      <div>{errorMessage && <p className="error">{errorMessage}</p>}</div>
     </div>
   );
 }
