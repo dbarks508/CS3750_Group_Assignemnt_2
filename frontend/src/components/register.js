@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
+import "./login.css";
 
 export default function Register() {
   const [errorMessage, setErrorMessage] = useState("");
@@ -64,7 +65,7 @@ export default function Register() {
   }
 
   return (
-    <div>
+    <div className="body">
       <h1>Your Bank</h1>
       <h3>Register</h3>
       <form onSubmit={onSubmit}>
@@ -111,7 +112,7 @@ export default function Register() {
       <div>
         {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
       </div>
-      <div>
+      <div className="bottom-nav">
         <p>Already a user?</p>
         <button onClick={toLogin}>Go To Login</button>
       </div>

@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
+import "./login.css";
 
 export default function Transfer() {
     // transfer page states
@@ -12,8 +13,8 @@ export default function Transfer() {
     const [message, setMessage] = useState("");
     const [form, setForm] = useState({
         dstUserID: "",
-        srcAccount: "",
-        dstAccount: "",
+        srcAccount: "0",
+        dstAccount: "0",
         category: "",
         amount: "",
     });
@@ -73,6 +74,16 @@ export default function Transfer() {
         if (data.message === "transfer successful") {
             console.log("transfer completed");
             setMessage(data.message);
+
+            // clear the form
+            setForm({
+                dstUserID: "",
+                srcAccount: "0",
+                dstAccount: "0",
+                category: "",
+                amount: "",
+            });
+
         }
         else {
             console.log("transfer failed");
@@ -82,8 +93,8 @@ export default function Transfer() {
     }
 
 return (
-    <div className="main">
-        <h2>Transfer Funds:</h2>
+    <div className="body">
+        <h1>Transfer Funds:</h1>
         <br/>
 
         <div className="container">
@@ -152,8 +163,9 @@ return (
                 <input type="submit" value="Transfer"></input>
 
             </form>
-            <div>
+            <div className="bottom-nav">
                 <button onClick={() => navigate("/home")}>Back to Home</button>
+                {message && <p>{message}</p>}
             </div>
         </div>
 

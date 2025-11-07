@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
+import "./login.css";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -57,7 +58,7 @@ export default function Login() {
   }
 
   return (
-    <div>
+    <div className="body">
       <h1>Your Bank</h1>
       <h3>Login</h3>
       <form onSubmit={onSubmit}>
@@ -89,7 +90,7 @@ export default function Login() {
       <div>
         {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
       </div>
-      <div>
+      <div className="bottom-nav">
         <p>Just kidding?</p>
         <button onClick={toRegister}>Go To Register</button>
       </div>
