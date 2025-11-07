@@ -40,7 +40,12 @@ export default function Transfer() {
     }, []);
 
 
-}
+    // helpr function to update form on change
+    function updateForm(jsonObj) {
+        return setForm((prevJsonObj) => {
+            return { ...prevJsonObj, ...jsonObj };
+        });
+    }
 
     // handle form submission
     async function onTransfer(e){
@@ -156,3 +161,4 @@ return (
         
     </div>
 )
+}
