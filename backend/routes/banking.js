@@ -41,6 +41,14 @@ async function doTransaction(accountNumber, accountIndex, action, category, amou
   );
 }
 
+async function accountExists(accountNumber){
+  let db = dbo.getDB();
+
+  const users = db.collection("users");
+
+  return users.find({accountNumber}).toArray().then(x => x.length > 0);
+}
+
 
 
 // deposit route
@@ -232,9 +240,23 @@ transactionRoutes.route("/transfer").post(async (req, res) => {
     res.status(400).json({ error: "malformed body" });
     return;
   }
-  data.srcAccountNumber = srcAccountNumber
+  data.srcAccountNumber = srcAccountNumber;
 
-  // TODO: validate account indexes and dst account number
+  data.srcAccountNumber = Number(data.srcAccountNumber);
+  data.srcAccountIndex  = Number(data.srcAccountIndex);
+  data.dstAccountNumber = Number(data.dstAccountNumber);
+  data.dstAccountIndex  = Number(data.dstAccountIndex);
+
+  if(!(0 > data.srcAccountIndex && data.srcAccountIndex <= 2 && 0 > data.dstAccountIndex && data.dstAccountIndex <= 2)){
+    res.status(400).json({ error: "invalid account index" });
+    return;
+  }
+
+  // NOTE: we don't need to validate srcAccountNumber since we got it from the session
+  if(!await accountExists(data.dstAccountNumber)){
+    res.status(404).json({ error: "destination account number not found" });
+    return;
+  }
 
   const amount = Number(data.amount);
 
@@ -248,16 +270,16 @@ transactionRoutes.route("/transfer").post(async (req, res) => {
   let now = new Date();
   if(
     !await doTransaction(
-      Number(data.srcAccountNumber),
-      Number(data.srcAccountIndex),
+      data.srcAccountNumber,
+      data.srcAccountIndex,
       "transfer",
       data.category,
       amount * -1,
       now,
     ) ||
     !await doTransaction(
-      Number(data.dstAccountNumber),
-      Number(data.dstAccountIndex),
+      data.dstAccountNumber,
+      data.dstAccountIndex,
       "transfer",
       data.category,
       amount,
