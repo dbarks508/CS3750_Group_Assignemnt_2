@@ -5,6 +5,7 @@ import Home from "./components/home.js";
 import Register from "./components/register.js";
 import Login from "./components/login.js";
 import Account from "./components/account.js";
+import Transfer from "./components/transfer.js";
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/account" element={<Account />} />
+        <Route path="/transfer" element={<Transfer />} />
       </Routes>
     </div>
   );
