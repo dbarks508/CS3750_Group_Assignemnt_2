@@ -39,6 +39,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(require("./routes/authentication"));
 app.use(require("./routes/banking"));
+app.use(require("./routes/dashboardRoutes"));
 
 app.listen(port, () => {
   dbo.connectToServer(function (err) {
