@@ -248,16 +248,16 @@ transactionRoutes.route("/transfer").post(async (req, res) => {
   let now = new Date();
   if(
     !await doTransaction(
-      data.srcAccountNumber,
-      data.srcAccountIndex,
+      Number(data.srcAccountNumber),
+      Number(data.srcAccountIndex),
       "transfer",
       data.category,
       amount * -1,
       now,
     ) ||
     !await doTransaction(
-      data.dstAccountNumber,
-      data.dstAccountIndex,
+      Number(data.dstAccountNumber),
+      Number(data.dstAccountIndex),
       "transfer",
       data.category,
       amount,
