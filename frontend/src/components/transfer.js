@@ -45,10 +45,9 @@ export default function Transfer() {
 
         // create the transfer json obj
         const transfer = {
-            srcUserID: srcUserID,
-            dstUserID: form.dstUserID,
-            srcAccount: form.srcAccount,
-            dstAccount: form.dstAccount,
+            dstAccountNumber: form.dstUserID,
+            srcAccountIndex: form.srcAccount,
+            dstAccountIndex: form.dstAccount,
             category: form.category,
             amount: form.amount,
         };
@@ -147,6 +146,9 @@ return (
                 <input type="submit" value="Transfer"></input>
 
             </form>
+            <div>
+                <button onClick={() => navigate("/home")}>Back to Home</button>
+            </div>
         </div>
 
 
