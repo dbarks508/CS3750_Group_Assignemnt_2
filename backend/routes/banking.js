@@ -46,7 +46,16 @@ async function accountExists(accountNumber){
 
   const users = db.collection("users");
 
-  return users.find({accountNumber}).toArray().then(x => x.length > 0);
+  return users.findOne({accountNumber}).then(u => u != null);
+}
+
+async function getBal(accountNumber, accountIndex){
+  let db = dbo.getDB();
+
+  const users = db.collection("users");
+
+  // NOTE: we are assuming that users.accountIndex.balance is updated per transaction
+  return users.findOne({accountNumber}).then(u => u?.accounts?.at(accountIndex)?.balance);
 }
 
 
@@ -246,6 +255,7 @@ transactionRoutes.route("/transfer").post(async (req, res) => {
   data.srcAccountIndex  = Number(data.srcAccountIndex);
   data.dstAccountNumber = Number(data.dstAccountNumber);
   data.dstAccountIndex  = Number(data.dstAccountIndex);
+  const amount = Number(data.amount);
 
   if(!(0 > data.srcAccountIndex && data.srcAccountIndex <= 2 && 0 > data.dstAccountIndex && data.dstAccountIndex <= 2)){
     res.status(400).json({ error: "invalid account index" });
@@ -258,7 +268,10 @@ transactionRoutes.route("/transfer").post(async (req, res) => {
     return;
   }
 
-  const amount = Number(data.amount);
+  if((await getBal(data.srcAccountNumber, data.srcAccountIndex)) < amount){
+    res.status(400).json({ error: "not enough money to transfer" });
+    return;
+  }
 
   // don't let the user steal from others...
   if(amount < 0){
