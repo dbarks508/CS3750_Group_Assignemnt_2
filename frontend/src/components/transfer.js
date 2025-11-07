@@ -39,6 +39,9 @@ export default function Transfer() {
         return;
     }, []);
 
+
+}
+
     // handle form submission
     async function onTransfer(e){
         e.preventDefault();
@@ -71,9 +74,7 @@ export default function Transfer() {
             setMessage(data.message);
             alert(data.message); // alert user on failure
         }
-
     }
-}
 
 return (
     <div className="main">
@@ -81,7 +82,7 @@ return (
         <br/>
 
         <div className="container">
-            <form onSubmit={onDeposit}>
+            <form onSubmit={onTransfer}>
                 <div>
                     <label>Destination Account Number: </label>
                     <input
