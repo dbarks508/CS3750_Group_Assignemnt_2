@@ -4,6 +4,45 @@ const express = require("express");
 const transactionRoutes = express.Router();
 const dbo = require("../db/conn");
 
+
+// helpers
+function readBody(req, ...keys){
+  let out = {};
+
+  for(const key of keys){
+    let value = req.body[key];
+
+    if(value === undefined) return undefined;
+    else out[key] = value;
+  }
+
+  return out;
+}
+
+async function doTransaction(accountNumber, accountIndex, action, category, amount, date){
+  let db = dbo.getDB();
+
+  const log = db.collection("transactions");
+  const users = db.collection("users");
+
+  return (
+    (await log.insertOne({
+      accountNumber,
+      accountIndex,
+      amount,
+      action,
+      category,
+      date,
+    })).acknowledged &&
+    (await users.updateOne(
+      {accountNumber},
+      {$inc: {[`accounts.${accountIndex}.balance`]: amount}}
+    )).acknowledged
+  );
+}
+
+
+
 // deposit route
 transactionRoutes.route("/deposit").post(async (req, res) => {
   try {
@@ -147,6 +186,8 @@ transactionRoutes.route("/withdraw").post(async (req, res) => {
   }
 });
 
+
+// transaction route
 transactionRoutes.route("/transactions").get(async (req, res) => {
   let accountNumber = req?.session?.accountNumber;
 
@@ -174,6 +215,62 @@ transactionRoutes.route("/transactions").get(async (req, res) => {
     .toArray();
 
   res.json(data);
+});
+
+
+// transfer route
+transactionRoutes.route("/transfer").post(async (req, res) => {
+  let srcAccountNumber = req?.session?.accountNumber;
+
+  if(srcAccountNumber === undefined){
+    res.status(401).json({ error: "user needs to be logged in" });
+    return;
+  }
+
+  let data = readBody(req, "srcAccountIndex", "dstAccountNumber", "dstAccountIndex", "category", "amount");
+  if(data === undefined){
+    res.status(400).json({ error: "malformed body" });
+    return;
+  }
+  data.srcAccountNumber = srcAccountNumber
+
+  // TODO: validate account indexes and dst account number
+
+  const amount = Number(data.amount);
+
+  // don't let the user steal from others...
+  if(amount < 0){
+    res.status(418).json({ error: "users are not allowed to transfer negative amounts" });
+    return;
+  }
+
+  // update database
+  let now = new Date();
+  if(
+    !await doTransaction(
+      data.srcAccountNumber,
+      data.srcAccountIndex,
+      "transfer",
+      data.category,
+      amount * -1,
+      now,
+    ) ||
+    !await doTransaction(
+      data.dstAccountNumber,
+      data.dstAccountIndex,
+      "transfer",
+      data.category,
+      amount,
+      now,
+    )
+  ){
+    res.status(500).json({ error: "failed to modify database" });
+    return;
+  }
+
+  // since the 'transactions' page is on a different page from the transfer page
+  // the frontend probably doesn't need any updated data (e.g. current balance)
+  res.json({ message: "transfer successful" });
 });
 
 module.exports = transactionRoutes;
