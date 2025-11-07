@@ -52,6 +52,8 @@ export default function Transfer() {
     async function onTransfer(e){
         e.preventDefault();
 
+        console.log("initiating transfer...");
+
         // create the transfer json obj
         const transfer = {
             dstAccountNumber: form.dstUserID,
@@ -60,6 +62,8 @@ export default function Transfer() {
             category: form.category,
             amount: form.amount,
         };
+
+        console.log(transfer);
 
         const res = await fetch(`http://localhost:4000/transfer`, {
             method: "POST",
@@ -118,9 +122,9 @@ return (
                     value={form.srcAccount}
                     onChange={(e) => updateForm({ srcAccount: e.target.value })}
                     required>
-                    <option id="savings" >Savings</option>
-                    <option id="checking" >Checking</option>
-                    <option id="other" >Other</option>
+                    <option value={0} >Savings</option>
+                    <option value={1} >Checking</option>
+                    <option value={2} >Other</option>
                     </select>
                 </div>
 
@@ -132,9 +136,9 @@ return (
                     value={form.dstAccount}
                     onChange={(e) => updateForm({ dstAccount: e.target.value })}
                     required>
-                    <option id="savings" >Savings</option>
-                    <option id="checking" >Checking</option>
-                    <option id="other" >Other</option>
+                    <option value={0} >Savings</option>
+                    <option value={1} >Checking</option>
+                    <option value={2} >Other</option>
                     </select>
                 </div>
 
