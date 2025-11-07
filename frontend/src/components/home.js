@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import "./home.css";
+import PieChartWithCustomizedLabel from "./pieChart"
 
 export default function Home() {
 
@@ -123,6 +124,7 @@ export default function Home() {
               signDisplay: "exceptZero",
             }),
             amountClass: amountClass,
+            amount: amount,
           };
         });
 
@@ -158,6 +160,27 @@ export default function Home() {
     // Updating displayed transactions
     setTransactions(filteredList);
   }, [selectedAccount, masterTransactionList, balances]);
+
+// Data for the pie chart
+const expenseTransactions = transactions.filter(t => t.amount < 0);
+// Grouping the category and gettign the sum of the amounts:
+const categoryTotals = expenseTransactions.reduce((acc, transaction) => {
+  const category = transaction.category;
+  const amount = Math.abs(transaction.amount);
+
+  if (!acc[category]) {
+    acc[category] = 0;
+  }
+  acc[category] += amount;
+  return acc;
+}, {});
+
+// Formatting the data for the chart
+const pieChartData = Object.keys(categoryTotals).map((category, index) => ({
+  id: index,
+  value: categoryTotals[category],
+  label: category,
+}));
 
 // Main HTML Return
 return (
@@ -268,7 +291,7 @@ return (
 
             {/* Right Column: Pie Chart */}
             <div>
-              <p>Pie Chart Placeholder</p>
+              <PieChartWithCustomizedLabel data={pieChartData} />
             </div>
           </div>
         </section>
