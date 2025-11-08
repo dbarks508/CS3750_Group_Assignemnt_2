@@ -111,10 +111,13 @@ export default function Home() {
             id: transaction.id,
             accountIndex: transaction.accountIndex,
             category: category,
-            date: new Date(transaction.date).toLocaleDateString("en-US", {
+            date: new Date(transaction.date).toLocaleString("en-US", {
               year: "numeric",
               month: "short",
               day: "numeric",
+
+              hour: "numeric",
+              minute: "numeric",
             }),
             amountFormatted: amount.toLocaleString("en-US", {
               style: "currency",
