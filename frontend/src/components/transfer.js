@@ -91,8 +91,8 @@ export default function Transfer() {
         }
         else {
             console.log("transfer failed");
-            setMessage(data.message);
-            alert(data.message); // alert user on failure
+            setMessage(data.error);
+            alert(data.error); // alert user on failure
         }
     }
 

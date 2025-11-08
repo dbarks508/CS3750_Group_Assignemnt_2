@@ -257,7 +257,7 @@ transactionRoutes.route("/transfer").post(async (req, res) => {
   data.dstAccountIndex  = Number(data.dstAccountIndex);
   const amount = Number(data.amount);
 
-  if(!(0 > data.srcAccountIndex && data.srcAccountIndex <= 2 && 0 > data.dstAccountIndex && data.dstAccountIndex <= 2)){
+  if(!(0 <= data.srcAccountIndex && data.srcAccountIndex <= 2 && 0 <= data.dstAccountIndex && data.dstAccountIndex <= 2)){
     res.status(400).json({ error: "invalid account index" });
     return;
   }
