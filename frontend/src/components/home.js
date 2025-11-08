@@ -104,9 +104,7 @@ export default function Home() {
         const formattedData = rawTransactions
         .sort((a, b) => new Date(b.date) - new Date(a.date))
         .map((transaction) => {
-          const rawAmount = parseFloat(transaction.amount);
-          // Checking the action and making it `-` if it is withdraw
-          const amount = transaction.action === 'withdraw' ? -rawAmount: rawAmount;
+          const amount = parseFloat(transaction.amount);
           const category= transaction.category ? transaction.category.charAt(0).toUpperCase() + transaction.category.slice(1) : "N/A (no name inputted)";
           const amountClass = amount < 0 ? 'transaction-amount-debt' : 'transaction-amount-gain';
           return {
