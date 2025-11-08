@@ -9,6 +9,8 @@ export default function Account() {
   const [errorMessage, setErrorMessage] = useState("");
   const [account, setAccount] = useState(null);
   const [updatedAmount, setUpdatedAmount] = useState(null);
+  const [accountName, setAccountName] = useState("");
+  const [dbAccountName, setdbAccountName] = useState("other");
   const [form, setForm] = useState({
     category: "",
     amount: "",
@@ -31,6 +33,7 @@ export default function Account() {
       } else {
         setUSerName(data.username);
         setAccountNumber(data.accountNumber);
+        setdbAccountName(data.accountName);
       }
     }
     run();
@@ -97,6 +100,35 @@ export default function Account() {
     }
   }
 
+  async function handleAccountName(accountName) {
+    const accountNameObject = {
+      accountName: accountName,
+    };
+
+    // send to backend
+    const response = await fetch(`http://localhost:4000/accountName`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(accountNameObject),
+    });
+
+    // handle responce
+    const data = await response.json();
+
+    if (!data.error) {
+      setdbAccountName(accountName);
+      setAccountName("");
+      console.log(data.message);
+    } else {
+      console.error(data.error);
+    }
+  }
+
+  function navigateHome() {
+    navigate("/home");
+  }
+
   return (
     <div className="main">
       {username && <h1>Welcome to your account management page, {username}</h1>}
@@ -138,13 +170,25 @@ export default function Account() {
             >
               <option value={0}>Account #1 - savings</option>
               <option value={1}>Account #2 - checking</option>
-              <option value={2}>Account #3 - other</option>
+              <option value={2}>Account #3 - {dbAccountName}</option>
             </select>
           </div>
 
           <button onClick={() => onSubmit("deposit")}>Deposit</button>
           <button onClick={() => onSubmit("withdraw")}>Withdraw</button>
         </form>
+
+        <div id="account-name-container">
+          <label>Specify account #3 name - optional</label>
+          <input
+            type="text"
+            value={accountName}
+            onChange={(e) => setAccountName(e.target.value)}
+          />
+          <button onClick={() => handleAccountName(accountName)}>
+            Save Changes
+          </button>
+        </div>
       </div>
 
       <div className="result-container">
@@ -154,6 +198,12 @@ export default function Account() {
           <p>${updatedAmount} in it. Congratulations!</p>
         )}
         {errorMessage && <p className="error">{errorMessage}</p>}
+      </div>
+
+      <div>
+        <button onClick={() => navigateHome()}>
+          Back to Account Dashboard
+        </button>
       </div>
     </div>
   );

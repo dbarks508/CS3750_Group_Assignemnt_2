@@ -157,11 +157,24 @@ userRoutes.route("/verify").get(async function (req, res) {
     status = "valid session";
   }
 
+  let db = dbo.getDB();
+  const usersCollection = db.collection("users");
+  const user = await usersCollection.findOne({
+    accountNumber: req.session.accountNumber,
+  });
+
+  if (!user) {
+    return res
+      .status(400)
+      .json({ error: "[veryify] no user with such accountNumber found" });
+  }
+
   // send data back
   const resultObj = {
     status: status,
     username: req.session.username,
     accountNumber: req.session.accountNumber,
+    accountName: user.accounts[2].name,
   };
 
   res.json(resultObj);
