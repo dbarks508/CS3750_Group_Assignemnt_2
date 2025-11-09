@@ -44,7 +44,7 @@ export default function PieChartWithCustomizedLabel({ data }) {
 
     return (
         <div style={{ width: sizing.width }}>
-            <h1>Transactions</h1>
+            <h1>Spending</h1>
             <PieChart
                 series={[
                 {
