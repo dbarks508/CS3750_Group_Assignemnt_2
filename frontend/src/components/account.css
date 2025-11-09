@@ -1,41 +1,72 @@
 .main {
-  background-color: #F4EBD0;
+  background-color: #111827;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   min-height: 90vh;
-  border: 5px solid #7A8450;
+  border: 5px solid #374151;
+  border-radius: 20px;
   padding: 20px;
   box-sizing: border-box;
   gap: 20px; 
 }
 
-.main-container,
-.result-container {
-  width: 90%;
-  border: 5px solid #7A8450;
-  box-sizing: border-box;
-}
+
 
 .main-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 60vh;
-  background-color: #C7A27C;
+  width: 80%;
+  background-color: #1f2937;
+  border-radius: 20px;
 }
 
 .result-container {
+  width: 80%;
+  height: 20vh;
+  border: 5px solid #374151;
+  border-radius: 20px; /* add rounding */
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 20vh;
+}
+
+.account-name-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: right;
+    background-color: #374151;
+    border-radius: 10px;
+    margin: 10px;
+}
+
+#deposit-button {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+
+#withdraw-button {
+    background-color: #4b5563;
+    color: #ffffff;
+}
+
+#home-button {
+    background-color: #dc2626;
+    color: #ffffff;
+}
+
+#save-button {
+    background-color: #2563eb;
+    color: #ffffff;
 }
 
 label { 
-    font-size: 18px;
+    font-size: 16px;
     margin: 10px;
 }
 input {
@@ -48,5 +79,5 @@ button {
 }
 
 p {
-    font-size: 20px;
+    font-size: 16px;
 }

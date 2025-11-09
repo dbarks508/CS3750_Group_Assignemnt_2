@@ -131,7 +131,9 @@ export default function Account() {
 
   return (
     <div className="main">
-      {username && <h1>Welcome to your account management page, {username}</h1>}
+      {username && (
+        <h1>Welcome to Your Account Management Page, {username}!</h1>
+      )}
       <div className="main-container">
         <form
           onSubmit={(e) => {
@@ -174,18 +176,25 @@ export default function Account() {
             </select>
           </div>
 
-          <button onClick={() => onSubmit("deposit")}>Deposit</button>
-          <button onClick={() => onSubmit("withdraw")}>Withdraw</button>
+          <button id="deposit-button" onClick={() => onSubmit("deposit")}>
+            Deposit
+          </button>
+          <button id="withdraw-button" onClick={() => onSubmit("withdraw")}>
+            Withdraw
+          </button>
         </form>
 
-        <div id="account-name-container">
-          <label>Specify account #3 name - optional</label>
+        <div className="account-name-container">
+          <label>Specify account #3 name (optional)</label>
           <input
             type="text"
             value={accountName}
             onChange={(e) => setAccountName(e.target.value)}
           />
-          <button onClick={() => handleAccountName(accountName)}>
+          <button
+            id="save-button"
+            onClick={() => handleAccountName(accountName)}
+          >
             Save Changes
           </button>
         </div>
@@ -201,7 +210,7 @@ export default function Account() {
       </div>
 
       <div>
-        <button onClick={() => navigateHome()}>
+        <button id="home-button" onClick={() => navigateHome()}>
           Back to Account Dashboard
         </button>
       </div>
