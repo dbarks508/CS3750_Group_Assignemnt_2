@@ -104,20 +104,19 @@ export default function Home() {
         const formattedData = rawTransactions
         .sort((a, b) => new Date(b.date) - new Date(a.date))
         .map((transaction) => {
-          const amount = parseFloat(transaction.amount);
+          const rawAmount = parseFloat(transaction.amount);
+          // Checking the action and making it `-` if it is withdraw
+          const amount = transaction.action === 'withdraw' ? -rawAmount: rawAmount;
           const category= transaction.category ? transaction.category.charAt(0).toUpperCase() + transaction.category.slice(1) : "N/A (no name inputted)";
           const amountClass = amount < 0 ? 'transaction-amount-debt' : 'transaction-amount-gain';
           return {
             id: transaction.id,
             accountIndex: transaction.accountIndex,
             category: category,
-            date: new Date(transaction.date).toLocaleString("en-US", {
+            date: new Date(transaction.date).toLocaleDateString("en-US", {
               year: "numeric",
               month: "short",
               day: "numeric",
-
-              hour: "numeric",
-              minute: "numeric",
             }),
             amountFormatted: amount.toLocaleString("en-US", {
               style: "currency",
